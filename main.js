@@ -25,6 +25,7 @@ class Critter {
     this.type = type;
     this.index = index;
     this.selected = false;
+    this.markedForDeath = false;
     //frameX and frameY
   }
   draw() {
@@ -46,11 +47,41 @@ class Critter {
   }
 }
 
+function eliminateMatches() {
+  for (i = 0; i < critterArray.length; i++) {
+    if (critterArray[i].markedForDeath) {
+      critterArray[i].type = 'black';
+      critterArray[i].markedForDeath = false;
+    }
+  }
+}
+
+function checkForMatches() {
+  for (i = 0; i < critterArray.length; i++) {
+    if (critterArray[i + 2]) {
+      if (critterArray[i].type === critterArray[i + 1].type && critterArray[i].type === critterArray[i + 2].type) {
+        critterArray[i].markedForDeath = true;
+        critterArray[i + 1].markedForDeath = true;
+        critterArray[i + 2].markedForDeath = true;
+      }
+    }
+    if (critterArray[i + (arrayWidthHeight * 2)]) {
+      if (critterArray[i].type === critterArray[i + arrayWidthHeight].type && critterArray[i].type === critterArray[i + (arrayWidthHeight * 2)].type) {
+        critterArray[i].markedForDeath = true;
+        critterArray[i + arrayWidthHeight].markedForDeath = true;
+        critterArray[i + (arrayWidthHeight * 2)].markedForDeath = true;
+      }
+    }
+  }
+  eliminateMatches();
+}
+
 function moveSelectedCritters() {
   let secondSpecies = critterArray[currentIndex].type;
   let firstSpecies = critterArray[previousIndex].type;
   critterArray[currentIndex].type = firstSpecies;
   critterArray[previousIndex].type = secondSpecies;
+  checkForMatches();
 }
 
 function markSelectedCritter(event) {
@@ -60,6 +91,7 @@ function markSelectedCritter(event) {
   let calcXPos = Math.floor(currentXPos / critterWidth);
   currentIndex = (calcYPos * arrayWidthHeight) + calcXPos;
 
+  critterArray[currentIndex].selected = (critterArray[currentIndex].selected) ? false : true;
   if (previousIndex !== currentIndex) critterArray[previousIndex].selected = false;
   if (
     (previousIndex === currentIndex - 1 && previousIndex % arrayWidthHeight !== arrayWidthHeight - 1) ||
@@ -67,7 +99,7 @@ function markSelectedCritter(event) {
     (previousIndex === currentIndex - arrayWidthHeight) ||
     (previousIndex === currentIndex + arrayWidthHeight)
   ) {
-    if (critterArray[previousIndex].selected = true) {
+    if (critterArray[currentIndex].selected === true) {
       critterArray[previousIndex].selected = false;
       critterArray[currentIndex].selected = false;
       moveSelectedCritters();
@@ -75,7 +107,7 @@ function markSelectedCritter(event) {
       return;
     }
   }
-    critterArray[currentIndex].selected = (critterArray[currentIndex].selected) ? false : true;
+    //critterArray[currentIndex].selected = (critterArray[currentIndex].selected) ? false : true;
     previousIndex = currentIndex;
 }
 
