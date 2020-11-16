@@ -5,13 +5,14 @@ canvas.width = 500;
 canvas.height = canvas.width;
 
 let critterArray = [];
-let speciesArray = ['red', 'blue', 'green', 'purple', 'orange'];
+let speciesArray = ['red', 'blue', 'green', 'purple', 'orange', 'deeppink'];
 const critterWidth = canvas.width / 10;
 const arrayWidthHeight = canvas.width / critterWidth;
 const maxCritters = arrayWidthHeight * arrayWidthHeight;
 
 let previousIndex = 0;
 let currentIndex;
+let timer;
 
 class Critter {
   constructor(x, y, type, index) {
@@ -20,7 +21,7 @@ class Critter {
     this.x = x * this.width;
     this.y = y * this.height;
     this.initialY = 0 - this.y;
-    this.vy = 4;
+    this.vy = 6;
     this.falling = true;
     this.type = type;
     this.index = index;
@@ -47,13 +48,25 @@ class Critter {
   }
 }
 
+function dropMatches() {
+  for (i = critterArray.length - 1; i >= 0; i--) {
+    if (critterArray[i].type === 'transparent' && critterArray[i - arrayWidthHeight]) {
+      critterArray[i].type = critterArray[i - arrayWidthHeight].type;
+      critterArray[i - arrayWidthHeight].type = 'transparent';
+      critterArray[i].initialY = critterArray[i - arrayWidthHeight].y;
+      critterArray[i].falling = true;
+    }
+  }
+}
+
 function eliminateMatches() {
   for (i = 0; i < critterArray.length; i++) {
     if (critterArray[i].markedForDeath) {
-      critterArray[i].type = 'black';
+      critterArray[i].type = 'transparent';
       critterArray[i].markedForDeath = false;
     }
   }
+    dropMatches()
 }
 
 function checkForMatches() {
@@ -81,7 +94,6 @@ function moveSelectedCritters() {
   let firstSpecies = critterArray[previousIndex].type;
   critterArray[currentIndex].type = firstSpecies;
   critterArray[previousIndex].type = secondSpecies;
-  checkForMatches();
 }
 
 function markSelectedCritter(event) {
@@ -92,14 +104,13 @@ function markSelectedCritter(event) {
   currentIndex = (calcYPos * arrayWidthHeight) + calcXPos;
 
   critterArray[currentIndex].selected = (critterArray[currentIndex].selected) ? false : true;
-  if (previousIndex !== currentIndex) critterArray[previousIndex].selected = false;
   if (
     (previousIndex === currentIndex - 1 && previousIndex % arrayWidthHeight !== arrayWidthHeight - 1) ||
     (previousIndex === currentIndex + 1 && previousIndex % arrayWidthHeight !== 0) ||
     (previousIndex === currentIndex - arrayWidthHeight) ||
     (previousIndex === currentIndex + arrayWidthHeight)
   ) {
-    if (critterArray[currentIndex].selected === true) {
+    if (critterArray[currentIndex].selected === true && critterArray[previousIndex].selected === true) {
       critterArray[previousIndex].selected = false;
       critterArray[currentIndex].selected = false;
       moveSelectedCritters();
@@ -107,7 +118,7 @@ function markSelectedCritter(event) {
       return;
     }
   }
-    //critterArray[currentIndex].selected = (critterArray[currentIndex].selected) ? false : true;
+    if (previousIndex !== currentIndex) critterArray[previousIndex].selected = false;
     previousIndex = currentIndex;
 }
 
@@ -136,6 +147,9 @@ function animate() {
 function init() {
   generateCritters();
   animate();
+  setTimeout(() => {
+    timer = setInterval(checkForMatches, 200);
+  }, 3000);
 }
 
 canvas.addEventListener('click', function(e) {
