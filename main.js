@@ -16,16 +16,20 @@ class Critter {
     this.height = critterWidth;
     this.x = x * this.width;
     this.y = y * this.height;
-    this.initialY = 0 - this.y; // - this.y; //invert this
+    this.initialY = 0 - this.y;
     this.vy = 4;
     this.falling = true;
     this.type = type;
     this.index = index;
+    this.selected = false;
     //frameX and frameY
   }
   draw() {
       ctx.fillStyle = this.type;
       ctx.fillRect(this.x, this.initialY, this.width, this.height);
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 4;
+      if (this.selected) ctx.strokeRect(this.x + 2, this.initialY + 2, this.width - 4, this.height - 4);
   }
 
   update() {
@@ -37,6 +41,15 @@ class Critter {
       this.initialY = this.y;
     }
   }
+}
+
+function markSelectedCritter(event) {
+  let currentYPos = event.clientY - ((window.innerHeight - canvas.height) / 2);
+  let currentXPos = event.clientX - ((window.innerWidth - canvas.width) / 2);
+  let calcYPos = Math.floor(currentYPos / critterWidth);
+  let calcXPos = Math.floor(currentXPos / critterWidth);
+  let currentIndex = (calcYPos * arrayWidthHeight) + calcXPos;
+  critterArray[currentIndex].selected = (critterArray[currentIndex].selected) ? false : true;
 }
 
 function generateCritters() {
@@ -65,5 +78,9 @@ function init() {
   generateCritters();
   animate();
 }
+
+canvas.addEventListener('click', function(e) {
+  markSelectedCritter(e);
+});
 
 init();
