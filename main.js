@@ -10,6 +10,9 @@ const critterWidth = canvas.width / 10;
 const arrayWidthHeight = canvas.width / critterWidth;
 const maxCritters = arrayWidthHeight * arrayWidthHeight;
 
+let previousIndex = 0;
+let currentIndex;
+
 class Critter {
   constructor(x, y, type, index) {
     this.width = critterWidth;
@@ -43,13 +46,37 @@ class Critter {
   }
 }
 
+function moveSelectedCritters() {
+  let secondSpecies = critterArray[currentIndex].type;
+  let firstSpecies = critterArray[previousIndex].type;
+  critterArray[currentIndex].type = firstSpecies;
+  critterArray[previousIndex].type = secondSpecies;
+}
+
 function markSelectedCritter(event) {
   let currentYPos = event.clientY - ((window.innerHeight - canvas.height) / 2);
   let currentXPos = event.clientX - ((window.innerWidth - canvas.width) / 2);
   let calcYPos = Math.floor(currentYPos / critterWidth);
   let calcXPos = Math.floor(currentXPos / critterWidth);
-  let currentIndex = (calcYPos * arrayWidthHeight) + calcXPos;
-  critterArray[currentIndex].selected = (critterArray[currentIndex].selected) ? false : true;
+  currentIndex = (calcYPos * arrayWidthHeight) + calcXPos;
+
+  if (previousIndex !== currentIndex) critterArray[previousIndex].selected = false;
+  if (
+    (previousIndex === currentIndex - 1 && previousIndex % arrayWidthHeight !== arrayWidthHeight - 1) ||
+    (previousIndex === currentIndex + 1 && previousIndex % arrayWidthHeight !== 0) ||
+    (previousIndex === currentIndex - arrayWidthHeight) ||
+    (previousIndex === currentIndex + arrayWidthHeight)
+  ) {
+    if (critterArray[previousIndex].selected = true) {
+      critterArray[previousIndex].selected = false;
+      critterArray[currentIndex].selected = false;
+      moveSelectedCritters();
+      previousIndex = 0;
+      return;
+    }
+  }
+    critterArray[currentIndex].selected = (critterArray[currentIndex].selected) ? false : true;
+    previousIndex = currentIndex;
 }
 
 function generateCritters() {
