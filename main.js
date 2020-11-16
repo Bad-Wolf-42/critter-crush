@@ -5,6 +5,7 @@ canvas.width = 500;
 canvas.height = canvas.width;
 
 let critterArray = [];
+let speciesArray = ['red', 'blue', 'green', 'purple', 'orange'];
 const critterWidth = canvas.width / 10;
 const arrayWidthHeight = canvas.width / critterWidth;
 const maxCritters = arrayWidthHeight * arrayWidthHeight;
@@ -15,8 +16,8 @@ class Critter {
     this.height = critterWidth;
     this.x = x * this.width;
     this.y = y * this.height;
-    this.initialY = 0; // - this.y; //invert this
-    this.vy = 2;
+    this.initialY = 0 - this.y; // - this.y; //invert this
+    this.vy = 4;
     this.falling = true;
     this.type = type;
     this.index = index;
@@ -44,7 +45,8 @@ function generateCritters() {
       let xPosition = x;
       let yPosition = y;
       let index = y * arrayWidthHeight + x;
-      let type = Math.random() < 0.5 ? 'red' : 'blue'; //add more colors; types array and random #
+      let typeSelector = Math.floor(Math.random() * speciesArray.length);
+      let type = speciesArray[typeSelector];
       critterArray.push(new Critter(xPosition, yPosition, type, index));
     }
   }
