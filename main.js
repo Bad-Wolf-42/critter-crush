@@ -21,7 +21,7 @@ class Critter {
     this.x = x * this.width;
     this.y = y * this.height;
     this.initialY = 0 - this.y;
-    this.vy = 6;
+    this.vy = 8;
     this.falling = true;
     this.type = type;
     this.index = index;
@@ -69,13 +69,16 @@ function eliminateMatches() {
     dropMatches()
 }
 
+//Make sure it doesn't wrap when matching
 function checkForMatches() {
   for (i = 0; i < critterArray.length; i++) {
     if (critterArray[i + 2]) {
       if (critterArray[i].type === critterArray[i + 1].type && critterArray[i].type === critterArray[i + 2].type) {
-        critterArray[i].markedForDeath = true;
-        critterArray[i + 1].markedForDeath = true;
-        critterArray[i + 2].markedForDeath = true;
+        if (i % arrayWidthHeight !== arrayWidthHeight - 1 && i % arrayWidthHeight !== arrayWidthHeight - 2) {
+          critterArray[i].markedForDeath = true;
+          critterArray[i + 1].markedForDeath = true;
+          critterArray[i + 2].markedForDeath = true;
+        }
       }
     }
     if (critterArray[i + (arrayWidthHeight * 2)]) {
