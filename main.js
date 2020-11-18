@@ -50,11 +50,18 @@ class Critter {
 
 function dropMatches() {
   for (i = critterArray.length - 1; i >= 0; i--) {
-    if (critterArray[i].type === 'transparent' && critterArray[i - arrayWidthHeight]) {
-      critterArray[i].type = critterArray[i - arrayWidthHeight].type;
-      critterArray[i - arrayWidthHeight].type = 'transparent';
-      critterArray[i].initialY = critterArray[i - arrayWidthHeight].y;
-      critterArray[i].falling = true;
+    if (critterArray[i].type === 'transparent') {
+      if (critterArray[i - arrayWidthHeight]) {
+        critterArray[i].type = critterArray[i - arrayWidthHeight].type;
+        critterArray[i - arrayWidthHeight].type = 'transparent';
+        critterArray[i].initialY = critterArray[i - arrayWidthHeight].y;
+        critterArray[i].falling = true;
+      } else {
+        let typeSelector = Math.floor(Math.random() * speciesArray.length);
+        critterArray[i].type = speciesArray[typeSelector];
+        critterArray[i].initialY = 0 - arrayWidthHeight;
+        critterArray[i].falling = true;
+      }
     }
   }
 }
